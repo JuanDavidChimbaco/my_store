@@ -1,10 +1,10 @@
-from ports.products_repository import ProductsRepository
+from products.ports.products_repository import ProductsRepository
 from django.core.paginator import Paginator
 
 
 class GetProducts(object):
     def __init__(self, products_repository):
-        self.products_repository = ProductsRepository
+        self.products_repository = products_repository
 
     def execute(self):
         products = self.products_repository.get_products()
@@ -30,3 +30,13 @@ class GetFilteredProducts(object):
         page_obj = paginator.get_page(1)
 
         return page_obj
+
+
+class GetProductById(object):
+    def __init__(self, products_repository):
+        self.products_repository = products_repository
+
+    def execute(self, product_id):
+        # Obtiene un solo producto por ID
+        product = self.products_repository.get_product_by_id(product_id)
+        return product

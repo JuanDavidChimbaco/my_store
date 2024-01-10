@@ -40,8 +40,8 @@ INSTALLED_APPS = [
     "products",
     "orders",
     "payments",
-    "djangorestframework",
-    "django-cors-headers",
+    "rest_framework",
+    "corsheaders",
 ]
 
 MIDDLEWARE = [
@@ -57,6 +57,7 @@ MIDDLEWARE = [
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
+    "http://localhost:8000",
 ]
 
 ROOT_URLCONF = "my_store.urls"

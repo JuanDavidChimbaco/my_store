@@ -1,6 +1,9 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework import status
+from rest_framework.generics import RetrieveUpdateDestroyAPIView
 
+from products.domain.models.products import Producto
 from products.adapter.products_repository_adapter import ProductsRepositoryAdapter
 from products.application.serializers import ProductSerializer
 from products.usecases.get_products import (
@@ -37,3 +40,38 @@ class SingleProductAPIView(APIView):
         serializer = ProductSerializer(product)
 
         return Response(serializer.data)
+
+
+class AgregarProductAPIView(APIView):
+    def post(self, request, *args, **kwargs):
+        serializer = ProductSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ProductDetailView(RetrieveUpdateDestroyAPIView):
+    queryset = Producto.objects.filter(eliminado=False)
+    serializer_class = ProductSerializer
+    lookup_field = "id"
+
+    def perform_destroy(self, instance):
+        instance.soft_delete()
+
+
+class RestoreProductView(APIView):
+    def post(self, request, product_id):
+        try:
+            product = Producto.objects.get(id=product_id, eliminado=True)
+            product.eliminado = False
+            product.save()
+            return Response(
+                {"message": "Producto restaurado correctamente."},
+                status=status.HTTP_200_OK,
+            )
+        except Producto.DoesNotExist:
+            return Response(
+                {"error": "Producto no encontrado o no eliminado."},
+                status=status.HTTP_404_NOT_FOUND,
+            )

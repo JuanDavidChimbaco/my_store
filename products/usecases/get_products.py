@@ -3,21 +3,20 @@ from django.core.paginator import Paginator
 
 
 class GetProducts(object):
-    def __init__(self, products_repository):
+    def __init__(self, products_repository: ProductsRepository):
         self.products_repository = products_repository
 
     def execute(self):
-        products = self.products_repository.get_products()
-        return products
+        return self.products_repository.obtener_todos_los_productos()
 
 
 class GetFilteredProducts(object):
-    def __init__(self, products_repository):
+    def __init__(self, products_repository: ProductsRepository):
         self.products_repository = products_repository
 
     def execute(self, name=None, price_from=None, price_to=None):
         # Filtra los productos según los parámetros
-        products = self.products_repository.get_products()
+        products = self.products_repository.obtener_todos_los_productos()
         if name:
             products = products.filter(name__icontains=name)
         if price_from:
